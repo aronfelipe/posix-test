@@ -9,7 +9,9 @@ typedef struct {
 
 #define test_printf (printf("%s: ", __func__));printf
 
-#define test_assert(expr, str) { if(!(expr)) { printf("%s: [FAIL] %s in %s:%d\n", __func__, str, __FILE__, __LINE__); return -1; }}
+#define test_assert(expr, str) { if(!(expr)) {return -1; }}
+
+//  printf("%s: [FAIL] %s in %s:%d\n", __func__, str, __FILE__, __LINE__); 
 
 #define TEST(f) {.name=#f, .function=f}
 

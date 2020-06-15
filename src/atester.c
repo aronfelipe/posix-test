@@ -1,5 +1,6 @@
 #include "mintest/macros.h"
 #include <stdio.h>
+#include <unistd.h>
 
 int test1() {
     char *p = 0;
@@ -14,11 +15,47 @@ int test2() {
 
 int test3() {
     while(1) {
-        
+
     }
+
+    return 0;
 }
 
-test_list = { TEST(test1), TEST(test2), TEST(test3) };
+int test4() {
+    for(int i = 0; i < 10000000; i++) {
+    }
+    printf("Working... \n");
 
+    return 0;
+}
+
+int test5() {
+    test_assert(1 == 1, "Smoothie.");
+    test_assert(420 == 420, "Sounds good");
+    test_assert(1 == 0, "This always fails!");
+    test_assert(1 == 1, "Neither this.");
+    return 0;
+}
+
+int test6() {
+    for(int i = 0; i < 100; i++) {
+        test_printf("%d \n", i);
+
+    }
+    return 0;
+
+}
+
+int test7() {
+    sleep(1);
+    return 0;
+}
+
+int test8() {
+    sleep(0.0001);
+    return 0;
+}
+
+test_list = { TEST(test1), TEST(test2), TEST(test3), TEST(test4), TEST(test5), TEST(test6), TEST(test7), TEST(test8)};
 
 #include "mintest/runner.h"
