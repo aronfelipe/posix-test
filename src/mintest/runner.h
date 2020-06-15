@@ -6,9 +6,30 @@
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>
+#include <stdlib.h>
+#include <time.h>
+#include<stdio.h>
+#include<unistd.h>
+#include<signal.h>
+
+typedef struct {
+    int id;
+    char name[50];
+} process;
+
+typedef struct {
+    int id;
+    int child_id;
+} process_help;
+
+
+void sig_handler(int signum){
+    kill(getpid(), SIGINT);
+}
 
 int main(int argc, char** argv) {
 
+    clock_t start = clock();
     int counter;
     int specific = -1;
 
@@ -29,8 +50,6 @@ int main(int argc, char** argv) {
             }
         }
     }
-
-    printf("%d \n", specific);
 
     if (specific != -1) {
 
@@ -55,6 +74,8 @@ int main(int argc, char** argv) {
             if (WEXITSTATUS(st) == 0) {
                 pass_count++;
             }
+        } else if (WIFSIGNALED(st)) {
+            printf("[ERRO]: %s \n", strsignal(WTERMSIG(st)));
         } 
 
         printf("%d/%d tests passed\n", pass_count, size);
@@ -63,12 +84,20 @@ int main(int argc, char** argv) {
     } else {
 
         int size = sizeof(all_tests)/sizeof(test_data);
+        process *dictionary = malloc(size * sizeof(process));
         printf("Running %d tests:\n", size);
         printf("=====================\n\n");
         int pass_count = 0;
 
         for (int i = 0; i < size; i++) {
-            if (fork() == 0) {
+            pid_t child = fork();
+            process action;
+            signal(SIGALRM, sig_handler);
+            alarm(2);
+            action.id = child;
+            sprintf(action.name, "%s", all_tests[i].name);
+            dictionary[i] = action;
+            if (child == 0) {
                 if (all_tests[i].function() >= 0) {
                     printf("%s: [PASS]\n", all_tests[i].name);
                     return 0;
@@ -80,19 +109,27 @@ int main(int argc, char** argv) {
 
         for (int i = 0; i < size; i++) {
             int st;
-            wait(&st);
-            if (WIFEXITED(st)) {
-                printf("Return: %d \n", WEXITSTATUS(st));
-                if (WEXITSTATUS(st) == 0) {
-                    pass_count++;
-                }
-            } else if (WIFSIGNALED(st)) {
-                printf("[ERRO]: %s \n", strsignal(WTERMSIG(st)));
-            } 
+            pid_t child = wait(&st);
 
+            for (int i = 0; i < size; i++) {
+                if (child == dictionary[i].id) {
+                    if (WIFEXITED(st)) {
+                        if (WEXITSTATUS(st) == 0) {
+                            printf("%s: [PASS] \n", dictionary[i].name);
+                            pass_count++;
+                        }
+                    } else if (WIFSIGNALED(st)) {
+                        printf("%s: [ERRO] %s \n", dictionary[i].name, strsignal(WTERMSIG(st)));
+                    } 
+                }
+            }
         }
-        
+
+        clock_t end = clock();
+        float seconds = (float)(end - start) / CLOCKS_PER_SEC;
         printf("%d/%d tests passed\n", pass_count, size);
+
+        printf("In %lf seconds", seconds);
         printf("\n\n=====================\n");
 
     }

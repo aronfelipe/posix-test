@@ -8,16 +8,14 @@ int test1() {
 }
 
 int test2() {
-    test_assert(1 == 0, "This always fails!");
-    printf("This never runs!\n");
-    test_assert(1 == 1, "Neither this.");
+    int divison = 100/0;
     return 0;
 }
 
 int test3() {
-    test_printf("<-- Name of the function before the printf!\n");
-    test_assert(1 == 1, "This always succeeds");
-    return 0;
+    while(1) {
+        
+    }
 }
 
 test_list = { TEST(test1), TEST(test2), TEST(test3) };
