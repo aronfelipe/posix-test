@@ -48,10 +48,8 @@ int test6() {
 }
 
 int test7() {
-    while(1) {
-        sleep(1);
-        return 0;
-    }
+    sleep(1);
+    return 0;
 }
 
 int test8() {
