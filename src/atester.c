@@ -24,7 +24,7 @@ int test3() {
 int test4() {
     for(int i = 0; i < 10000000; i++) {
     }
-    printf("Working... \n");
+    test_printf("Working... \n");
 
     return 0;
 }
@@ -38,17 +38,20 @@ int test5() {
 }
 
 int test6() {
-    for(int i = 0; i < 100; i++) {
+    for(int i = 0; i < 10; i++) {
         test_printf("%d \n", i);
-
+        for (int j = 0; j < 10; j++) {
+            test_printf("%d \n", j);
+        } 
     }
     return 0;
-
 }
 
 int test7() {
-    sleep(1);
-    return 0;
+    while(1) {
+        sleep(1);
+        return 0;
+    }
 }
 
 int test8() {
